@@ -1,0 +1,18 @@
+{
+	"id": "info.mobo.exportcalendar.service",
+	"description": "Service to export all events from the database to a ics file in the media partition.",
+	"engine": "node",
+	"activityTimeout": "60",
+	"services": [
+	{
+		"name": "info.mobo.exportcalendar.service",
+		"description": "events export sevice",
+		"commands": [
+		{
+			"name": "doExport",
+			"assistant": "doExportAssitant",
+			"subscribe": true,
+			"public": true
+		}]
+	}]
+}

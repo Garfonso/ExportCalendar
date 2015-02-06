@@ -1,0 +1,29 @@
+This app exports all calendar entries from all calendars to an ics file that you can import on other devices.
+
+This file is saved in the usb partition and can be send as attachement per E-Mail (from the app menu).
+It should be easy to import that file to owncloud, google, whatever... This way one can backup and/or export all the events from the device and keep them, even if webos goes down or the palm backup server dies someday.
+
+IMPORTANT
+Currently you manually have to run
+
+luna-send -a com.palm.app.calendar -n 1 palm://com.palm.db/putPermissions '{"permissions": [{"type": "db.kind", "object": "com.palm.calendarevent:1", "caller": "info.mobo.exportcalendar.service", "operations": {"read":"allow"}}, {"type": "db.kind", "object": "com.palm.calendarevent:1", "caller": "info.mobo.exportnotes.service", "operations": {"read": "allow"}}]}'
+
+from a root-terminal on the device. This is to set permissions so the service is allowed to read from the database!
+There will be a patch for that too. After applying the patch, please reboot the device.
+
+How-To:
+Just press "Do Export" and wait for the spinner to stop spinning and the message "All went well".
+If you get a "Permission denied"-Error, please execute the command line from above.
+After that hook up the device to an USB port and copy the created file or use "Mail notes"
+from the app menu and e-mail the notes to yourself.
+
+You can change the filename in the text editfield. But there is no real reason to do so.
+
+If the service locks up, you'll have close the app and wait a minute or you can try "Reset service" from the app menu.
+
+Versionhistory:
+1.0.0 (2012-10-07)
+- initial release (based on Export Messages app).
+
+Pull requests are welcome! :)
+Released under MIT license.

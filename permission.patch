@@ -1,0 +1,19 @@
+--- original/etc/palm/db/permissions/com.palm.calendarevent
++++ modified/etc/palm/db/permissions/com.palm.calendarevent
+@@ -89,5 +89,14 @@
+ 		,	"update": "allow"
+ 		,	"delete": "allow"
+ 		}
+-	}	
++	},
++	{
++		"type"		: "db.kind",
++		"object"	: "com.palm.calendarevent:1",
++		"caller"	: "info.mobo.*",
++		"operations":
++		{
++			"read": "allow"	
++		}
++	}
+ ]
+\ No newline at end of file

@@ -1,0 +1,9 @@
+[
+	{ "library": { "name": "foundations", "version": "1.0" }},
+	{ "library": { "name": "calendar" , "version": "1.0" }},
+	{"source": "lib/serviceHelpers.js"},
+	{"source": "lib/iCal.js"},
+	{
+		"source": "assistants/doExportAssitant.js"
+	}
+]
