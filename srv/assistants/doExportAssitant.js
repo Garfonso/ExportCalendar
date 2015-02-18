@@ -4,6 +4,21 @@
 var doExportAssitant = function (future) {
 };
 
+var nodejsMajorVersion = Number(process.version.match(/^v\d+\.(\d+)/)[1]);
+
+var quote = function (string) {
+	"use strict";
+	if (string === undefined || string === null || typeof string !== "string") {
+		return string;
+	}
+	string = string.replace(/\\/gmi, "\\\\");
+	string = string.replace(/,/gmi, "\\,");
+	string = string.replace(/;/gmi, "\\;");
+	string = string.replace(/\n/gmi, "\\n");
+	string = string.replace(/\r/gmi, "\\r");
+	return string;
+};
+
 doExportAssitant.prototype.processEvents = function (eArray, first) {
 	var txt = iCal.generateICal(eArray),
 		start,
@@ -28,8 +43,8 @@ doExportAssitant.prototype.getFooter = function () {
 
 doExportAssitant.prototype.run = function (outerFuture, subscription) {
 	log("============== doExportAssitant");
-	var databaseCallback, finishAssistant, args = this.controller.args, stats = { events: 0, written: 0, count: 0, fileSize: 0 },
-		config = args, fileStream, query = {};
+	var databaseCallback, processAlarm, finishAssistant, args = this.controller.args, stats = { events: 0, written: 0, count: 0, fileSize: 0 },
+		config = args, fileStream, query = {}, newAlarms = [];
 	log("args: " + JSON.stringify(args));
 	finishAssistant = function (result) {
 		finishAssistant_global({outerFuture: outerFuture, result: result});
@@ -46,19 +61,49 @@ doExportAssitant.prototype.run = function (outerFuture, subscription) {
 		return;
 	}
 
+	processAlarm = function (alarm) {
+		if (alarm && alarm.alarmTrigger && alarm.alarmTrigger.value) {
+			logToApp("Converting value to upper case");
+			alarm.alarmTrigger.value = alarm.alarmTrigger.value.toUpperCase() + " U";
+			if (!alarm.action) {
+				alarm.action = "DISPLAY";
+			} else {
+				alarm.action = alarm.action.toUpperCase();
+			}
+			newAlarms.push(alarm);
+		}
+	};
+
 	databaseCallback = function (future) {
 		try {
 			var r = future.result, i, line, fileStats;
 			if (r.returnValue === true) {
 				for (i = 0; i < r.results.length; i += 1) {
-					delete r.results[i]._sync;
+					/*delete r.results[i]._sync;
 					delete r.results[i].uri;
 					delete r.results[i].finished;
 					delete r.results[i].originalDtstart;
 					delete r.results[i].uploadFailed;
 					delete r.results[i].etag;
 					delete r.results[i].eventDisplayRevset;
+					delete r.uId;
+					delete r.floating;
+					delete r.endValidity;
+					if (r.results[i].alarms) {
+						newAlarms = [];
+						r.results[i].alarms.forEach(processAlarm);
+						r.results[i].alarms = newAlarms;
+					}
+					if (nodejsMajorVersion < 4) { //necessary only on phones, will break stuff on TP.
+						if (r.results[i].note) {
+							r.results[i].note = quote(r.results[i].note);
+						}
+						if (r.results[i].subject) {
+							r.results[i].subject = quote(r.results[i].subject);
+						}
+					}*/
 					line = this.processEvents(r.results[i]);
+					//line = line.replace(/TRIGGER:/g, "TRIGGER;VALUE=DURATION:"); //repair triggers
 					stats.events += 1;
 					fileStream.write(line);
 				}
